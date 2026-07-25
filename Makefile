@@ -7,3 +7,5 @@ bits:
 	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c -o bin/main
 #	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c  -o bin/main
 
+toys:
+	$(GCC) test/toys/coroutine.c  -o test/toys/coroutine
