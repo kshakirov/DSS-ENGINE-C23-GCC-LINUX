@@ -6,18 +6,54 @@
 // Размер стека для корутины (минимально 1 страница Linux — 4КБ)
 #define STACK_SIZE 4096
 
+static thread_local void* dispatcher_rsp = nullptr;
+
 // Паспорт нашей корутины
 typedef struct {
     void* rsp;          // Сюда сохраним расчетный указатель стека
     void* stack_bottom; // Храним для будущего munmap
 } ToyCoroutine;
 
+void toy_yield(void){
+  __asm__ __volatile__(
+    /* 1. Сохраняем реальный контекст корутины на её же стеке */
+    "pushq %%rbp \n\t"
+    "pushq %%rbx \n\t"
+    "pushq %%r12 \n\t"
+    "pushq %%r13 \n\t"
+    "pushq %%r14 \n\t"
+    "pushq %%r15 \n\t"
+
+    /* 2. Принудительно подменяем RSP корутины на сохраненный RSP Диспетчера */
+    /* %0 — это как раз плейсхолдер для dispatcher_rsp */
+    "movq %0, %%rsp \n\t" 
+
+    /* 3. Восстанавливаем сохраненный контекст Диспетчера из его стека */
+    "popq %%r15 \n\t"
+    "popq %%r14 \n\t"
+    "popq %%r13 \n\t"
+    "popq %%r12 \n\t"
+    "popq %%rbx \n\t"
+    "popq %%rbp \n\t"
+
+    /* 4. Аппаратный прыжок назад в main! */
+    "ret            \n\t"
+    :
+    : "r"(dispatcher_rsp) /* Скармливаем переменную асму через плейсхолдер %0 */
+    : "memory"
+);
+
+  
+  };
+
 // Функция бизнес-логики, куда мы хотим принудительно прыгнуть
 void toy_entry_point(void) {
     printf("[Coroutine] БУМ! Бабушка приехала! Мы внутри корутины!\n");
     printf("[Coroutine] Физика сработала. Выходим штатно через exit.\n");
-    exit(0); 
+    exit(0);
+    
 }
+
 
 // Функция ручного подлога фрейма стека
 ToyCoroutine create_toy_coroutine(void (*entry)(void)) {
@@ -58,9 +94,20 @@ ToyCoroutine create_toy_coroutine(void (*entry)(void)) {
     return co;
 }
 
+
 int main(void) {
     printf("[Dispatcher] Инициализация игрушечного рантайма...\n");
     
+
+
+
+    __asm__ __volatile__(
+	"movq %%rsp, %0             \n\t"
+	:"=r"(dispatcher_rsp) 
+	:
+
+	:"memory"
+    );
     ToyCoroutine co = create_toy_coroutine(toy_entry_point);
     
     printf("[Dispatcher] Стек подделан. Стартовый RSP = %p. Прыгаем!\n", co.rsp);
@@ -81,6 +128,7 @@ int main(void) {
         : "r"(co.rsp)
         : "memory"
     );
+    printf("Люба, я вернулся!!!\n");
 
     return 0; // Сюда мы никогда не вернемся, корутина завершит процесс
 }
