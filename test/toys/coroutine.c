@@ -29,12 +29,12 @@ void toy_yield(void){
     "movq %0, %%rsp \n\t" 
 
     /* 3. Восстанавливаем сохраненный контекст Диспетчера из его стека */
-    "popq %%r15 \n\t"
-    "popq %%r14 \n\t"
-    "popq %%r13 \n\t"
-    "popq %%r12 \n\t"
-    "popq %%rbx \n\t"
-    "popq %%rbp \n\t"
+    /* "popq %%r15 \n\t" */
+    /* "popq %%r14 \n\t" */
+    /* "popq %%r13 \n\t" */
+    /* "popq %%r12 \n\t" */
+    /* "popq %%rbx \n\t" */
+    /* "popq %%rbp \n\t" */
 
     /* 4. Аппаратный прыжок назад в main! */
     "ret            \n\t"
