@@ -1,6 +1,6 @@
 #GCC=gcc
 GCC=/usr/local/gcc-15.1.0/bin/gcc-15.1.0
-GCCFLAGS=-o3
+GCCFLAGS=
 
 
 bits:
