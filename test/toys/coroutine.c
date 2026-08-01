@@ -50,7 +50,8 @@ void toy_yield(void){
 void toy_entry_point(void) {
     printf("[Coroutine] БУМ! Бабушка приехала! Мы внутри корутины!\n");
     printf("[Coroutine] Физика сработала. Выходим штатно через exit.\n");
-    exit(0);
+    //exit(0);
+    toy_yield();
     
 }
 
