@@ -29,3 +29,4 @@ fiber_switch:
 
     # 4. Прыжок на RIP, лежащий на вершине нового стека
     ret
+.section .note.GNU-stack,"",@progbits

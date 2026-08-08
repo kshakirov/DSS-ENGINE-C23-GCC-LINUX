@@ -12,7 +12,7 @@ static thread_local void* dispatcher_rsp = nullptr;
 typedef struct {
   void* rsp;          // Сюда сохраним расчетный указатель стека
   void* stack_bottom; // Храним для будущего munmap
-} ToyCoroutine;
+} Coroutine;
 
 void toy_yield(void) {
     void* dummy_co_rsp = nullptr;
@@ -33,8 +33,8 @@ void toy_entry_point(void) {
 
 
 // Функция ручного подлога фрейма стека
-ToyCoroutine create_toy_coroutine(void (*entry)(void)) {
-  ToyCoroutine co;
+Coroutine create_toy_coroutine(void (*entry)(void)) {
+  Coroutine co;
     
   // 1. Выделяем изолированную память у ядра Linux
   co.stack_bottom = mmap(NULL, STACK_SIZE, 
@@ -78,7 +78,7 @@ int main(void) {
 
 
 
-  ToyCoroutine co = create_toy_coroutine(toy_entry_point);
+  Coroutine co = create_toy_coroutine(toy_entry_point);
     
   printf("[Dispatcher] Стек подделан. Стартовый RSP = %p. Прыгаем!\n", co.rsp);
 
