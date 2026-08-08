@@ -5,17 +5,6 @@
 #include "fiber_switch.h"
 // Размер стека для корутины (минимально 1 страница Linux — 4КБ)
 #define STACK_SIZE 4096
-/* extern void fiber_switch(void** current_rsp, void* next_rsp); */
-/* // Чистый ассемблер x86-64 (System V ABI) */
-/* __asm__( */
-/* ".global fiber_switch\n\t" */
-/* "fiber_switch:\n\t" */
-/*     "pushq %rbp; pushq %rbx; pushq %r12; pushq %r13; pushq %r14; pushq %r15\n\t" // Сохраняем callee-saved */
-/*     "movq %rsp, (%rdi)\n\t" // Сохраняем старый RSP */
-/*     "movq %rsi, %rsp\n\t"   // Переключаем RSP */
-/*     "popq %r15; popq %r14; popq %r13; popq %r12; popq %rbx; popq %rbp\n\t" // Восстанавливаем */
-/*     "ret\n\t" */
-/* ); */
 
 static thread_local void* dispatcher_rsp = nullptr;
 
@@ -99,7 +88,7 @@ int main(void) {
   // Заменяем две раздельные вставки в main на одну монолитную:
   fiber_switch(&dispatcher_rsp, co.rsp);
 
-  printf("Люба, я вернулся!!!\n");
+  printf("Люба, я вернулся с корутиной А!!!\n");
 
   return 0; // Сюда мы никогда не вернемся, корутина завершит процесс
 }
