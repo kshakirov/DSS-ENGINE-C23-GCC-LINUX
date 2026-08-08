@@ -5,6 +5,17 @@
 
 // Размер стека для корутины (минимально 1 страница Linux — 4КБ)
 #define STACK_SIZE 4096
+extern void fiber_switch(void** current_rsp, void* next_rsp);
+// Чистый ассемблер x86-64 (System V ABI)
+__asm__(
+".global fiber_switch\n\t"
+"fiber_switch:\n\t"
+    "pushq %rbp; pushq %rbx; pushq %r12; pushq %r13; pushq %r14; pushq %r15\n\t" // Сохраняем callee-saved
+    "movq %rsp, (%rdi)\n\t" // Сохраняем старый RSP
+    "movq %rsi, %rsp\n\t"   // Переключаем RSP
+    "popq %r15; popq %r14; popq %r13; popq %r12; popq %rbx; popq %rbp\n\t" // Восстанавливаем
+    "ret\n\t"
+);
 
 static thread_local void* dispatcher_rsp = nullptr;
 
@@ -14,37 +25,13 @@ typedef struct {
   void* stack_bottom; // Храним для будущего munmap
 } ToyCoroutine;
 
-void toy_yield(void){
-  __asm__ __volatile__(
-		       /* 1. Сохраняем реальный контекст корутины на её же стеке */
-		       "pushq %%rbp \n\t"
-		       "pushq %%rbx \n\t"
-		       "pushq %%r12 \n\t"
-		       "pushq %%r13 \n\t"
-		       "pushq %%r14 \n\t"
-		       "pushq %%r15 \n\t"
+void toy_yield(void) {
+    void* dummy_co_rsp = nullptr;
+    fiber_switch(&dummy_co_rsp, dispatcher_rsp);
+}
 
-		       /* 2. Принудительно подменяем RSP корутины на сохраненный RSP Диспетчера */
-		       /* %0 — это как раз плейсхолдер для dispatcher_rsp */
-		       "movq %0, %%rsp \n\t" 
 
-		       /* 3. Восстанавливаем сохраненный контекст Диспетчера из его стека */
-		       /* "popq %%r15 \n\t" */
-		       /* "popq %%r14 \n\t" */
-		       /* "popq %%r13 \n\t" */
-		       /* "popq %%r12 \n\t" */
-		       /* "popq %%rbx \n\t" */
-		       /* "popq %%rbp \n\t" */
 
-		       /* 4. Аппаратный прыжок назад в main! */
-		       "ret            \n\t"
-		       :
-		       : "r"(dispatcher_rsp) /* Скармливаем переменную асму через плейсхолдер %0 */
-		       : "memory"
-		       );
-
-  
-};
 
 // Функция бизнес-логики, куда мы хотим принудительно прыгнуть
 void toy_entry_point(void) {
@@ -110,18 +97,7 @@ int main(void) {
   // Мы принудительно пишем расчетный RSP в регистр процессора %rsp
   // Затем снимаем 6 фейковых регистров (popq) и делаем ret
   // Заменяем две раздельные вставки в main на одну монолитную:
-  __asm__ __volatile__(
-		       "movq %%rsp, %0 \n\t"  // 1. СНАЧАЛА сохраняем чистый RSP Диспетчера
-		       "movq %1, %%rsp \n\t"  // 2. ТУТ ЖЕ подменяем на стек корутины
-		       "popq %%r15     \n\t"  // 3. Снимаем фейковый контекст корутины
-		       "popq %%r14     \n\t"
-		       "pushq %%r13    \n\t" // (и так далее все 6 popq) ...
-		       "popq %%rbp     \n\t"
-		       "ret            \n\t"  // 4. Прыгаем в toy_entry_point!
-		       : "=r"(dispatcher_rsp) // %0 - Выход
-		       : "r"(co.rsp)          // %1 - Вход
-		       : "memory"
-		       );
+  fiber_switch(&dispatcher_rsp, co.rsp);
 
   printf("Люба, я вернулся!!!\n");
 
