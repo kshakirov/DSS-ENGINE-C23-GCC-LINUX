@@ -1,6 +1,6 @@
 GCC=gcc
-#GCC=/usr/local/gcc-15.1.0/bin/gcc-15.1.0
-GCCFLAGS=
+# GCC=/usr/local/gcc-15.1.0/bin/gcc-15.1.0
+GCCFLAGS= -std=c23 -Wall -Wextra -Wpedantic -Werror -O2
 
 
 bits:
@@ -8,7 +8,7 @@ bits:
 #	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c  -o bin/main
 
 toys:
-	$(GCC) -c test/toys/fiber_switch.S -o test/toys/fiber_switch.o
-	$(GCC) test/toys/coroutine.c  -o test/toys/coroutine
-	$(GCC) -c test/toys/coroutine_a.c  -o test/toys/coroutine_a.o
-	$(GCC) test/toys/fiber_switch.o test/toys/coroutine_a.o  -o test/toys/coroutine_a	
+	$(GCC) -c test/toys/fiber_switch.S -o test/toys/fiber_switch.o $(GCCFLAGS)
+	#$(GCC) test/toys/coroutine.c  -o test/toys/coroutine $(GCCFLAGS)
+	$(GCC) -c test/toys/coroutine_a.c  -o test/toys/coroutine_a. $(GCCFLAGS)
+	$(GCC) test/toys/fiber_switch.o test/toys/coroutine_a.o  -o test/toys/coroutine_a	$(GCCFLAGS)
