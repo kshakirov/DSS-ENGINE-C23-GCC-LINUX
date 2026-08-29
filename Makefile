@@ -1,10 +1,11 @@
 GCC=gcc
 # GCC=/usr/local/gcc-15.1.0/bin/gcc-15.1.0
-GCCFLAGS= -std=c23 -Wall -Wextra -Wpedantic -Werror -O2
+GCCFLAGS= -std=c23 -Wall -Wextra -Wpedantic -Werror -O2 -lxxhash
+GCCFLAGS= -std=c23 -Wall  -O2 -lxxhash
 
 
 bits:
-	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c  -o bin/main
+	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c  -o bin/main $(GCCFLAGS)
 #	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c  -o bin/main
 
 toys:
@@ -12,3 +13,6 @@ toys:
 	#$(GCC) test/toys/coroutine.c  -o test/toys/coroutine $(GCCFLAGS)
 	$(GCC) -c test/toys/coroutine_a.c  -o test/toys/coroutine_a. $(GCCFLAGS)
 	$(GCC) test/toys/fiber_switch.o test/toys/coroutine_a.o  -o test/toys/coroutine_a	$(GCCFLAGS)
+
+test_storage:
+	$(GCC) test/storage/test_insert_find.c lib/storage/storage.c  -o test/storage/test_insert_find		$(GCCFLAGS)
