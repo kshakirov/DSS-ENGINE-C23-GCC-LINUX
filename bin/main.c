@@ -1,4 +1,5 @@
 #include "all.h"
+#include "../debug.h"
 
 #include <stdio.h>
 #include "../lib/facade/facade.h"

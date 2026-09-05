@@ -1,8 +1,4 @@
-#include <stddef.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <xxhash.h>
+#include "storage.h"
 typedef uint64_t BlockHash;
 typedef void *BlockAddress;
 typedef int32_t HashIndex;
@@ -11,6 +7,7 @@ static size_t stored_blocks;
 #define  CAPACITY 10000
 //about N it is fo the time being
 
+
 static BlockHash blockHashTable[CAPACITY];
 static BlockAddress blockAddressTable[CAPACITY];
 
@@ -18,7 +15,7 @@ static BlockAddress blockAddressTable[CAPACITY];
 //those functions will work within process_file 
 static HashIndex find_index_hash_table (BlockHash hash){
 
-  for(int i = 0; i< stored_blocks;i++){
+  for(size_t i = 0; i< stored_blocks;i++){
     if(blockHashTable[i] == hash){
       return i;
     }
@@ -26,11 +23,11 @@ static HashIndex find_index_hash_table (BlockHash hash){
   return  -1;
 }
 static HashIndex insert_index_hash_table( BlockHash hash){
-  if(stored_blocks < CAPACITY){
+
     blockHashTable[stored_blocks] = hash;
     stored_blocks += 1;
     return stored_blocks -1 ;
-  }
+
 }
 static bool sync_index_block_table(HashIndex, BlockAddress);
 
@@ -38,19 +35,21 @@ static bool sync_index_block_table(HashIndex, BlockAddress);
 
 
 
-HashIndex process_file(const char* filename, const char* content){
+HashIndex process_file(const char* filename, const char* content, size_t size){
   printf("Storage: I am processing the file %s with content %s \n", filename, content);
-  BlockHash hash = XXH64(content, sizeof(content),0);
-  auto idx =   find_index_hash_table(hash);
+  BlockHash hash = XXH64(content, size,0);
+  HashIndex idx =   find_index_hash_table(hash);
   if(idx > -1){
+    DEBUG_LOG("I  found the index by  hash %lu\n", hash);
   }else {
     if(stored_blocks < CAPACITY){
       idx = insert_index_hash_table(hash);
+      DEBUG_LOG("Not found the index, creating  the index by  hash %lu\n", hash);
     }else{
-      // for the future malloc or realloc or whatever
+      // TODO make ti grow and its parallel blocck address 
     }
   }
-  printf("Storage: Saving the file...\n");
+  DEBUG_LOG("Storage: Saving the file...\n");
   return idx; //for test only
 }
 
