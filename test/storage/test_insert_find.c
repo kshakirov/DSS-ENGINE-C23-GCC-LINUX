@@ -5,7 +5,7 @@
 #include "../../lib/storage/storage.h"
 int main(void){
   auto content = "tell me why you lied to me";
-  long size = strlen(content);
+  size_t size = strlen(content);
   printf("the size of content is %ld\n", size);
 
   auto filename = "file.txt";
