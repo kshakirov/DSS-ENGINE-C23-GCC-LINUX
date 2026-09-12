@@ -8,7 +8,7 @@ LDLIBS= -lxxhash
 
 
 bits:
-	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c  -o bin/main $(GCCFLAGS)
+	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c lib/file_table/file_table.c  -o bin/main $(GCCFLAGS)
 #	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c  -o bin/main
 
 toys:
