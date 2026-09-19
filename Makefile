@@ -19,3 +19,6 @@ toys:
 
 test_storage:
 	$(GCC) test/storage/test_insert_find.c lib/storage/storage.c  -o test/storage/test_insert_find		$(GCCFLAGS) $(LDLIBS)
+
+test_filetable:
+	$(GCC) test/file_table/test_put_get_file.c lib/file_table/file_table.c  -o test/file_table/test_put_get_file		$(GCCFLAGS) $(LDLIBS)
