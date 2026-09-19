@@ -9,7 +9,9 @@ int main(void){
   const char* filename = "file to save";
   const char* content = "the content of the file is almost empty";
   auto found = get_file(filename);
-  assert(strcmp(found, "not found"));
-  auto idx  = put_file(filename, content);
-  assert(idx > -1);
+  printf("%s\n",found);
+  assert(strcmp(found, "not found")==0);
+  auto idx  = put_file(filename, content, strlen(content));
+  printf("%u\n",idx);
+  assert(idx >=0);
 }
