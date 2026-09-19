@@ -13,6 +13,7 @@ typedef  struct {
   size_t size;
   FileIndex descr;
   FileNameHash fileNameHash;
+  size_t block_count;
   //dont' now how make Block address available her
 }FileMetadata;
 
