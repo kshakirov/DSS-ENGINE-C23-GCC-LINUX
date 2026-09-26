@@ -11,17 +11,17 @@
 int main(int argc, char** argv){
   const char* filename = "hello.txt";
   const char* content = "hello,world";
-  printf("Creating the walking schelethon\n");
+  printf("Creating the tract without the dispatcher \n");
   //auto clear
-  Dispatcher* dispatcher = create_dispatcher();
+  //  Dispatcher* dispatcher = create_dispatcher();
   CmdData* data = put(filename, content);
-  auto idx = process_file(filename, content, strlen(content));
-  printf("got the index of process file %d \n", idx);
+  
   Coroutine* coroutine = create_coroutine(data);
   Task* task = create_task(coroutine, data);
-  register_task(dispatcher, task);
+  //  register_task(dispatcher, task);
 
-  dispatcher_run_loop(dispatcher);
+  //dispatcher_run_loop(dispatcher);
+  execute_task_step(task);
   
   
 }

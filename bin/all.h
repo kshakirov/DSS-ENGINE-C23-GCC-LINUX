@@ -32,6 +32,7 @@ typedef struct {
   int id;
   Coroutine* coroutine;
   TASK_STATUS status;
+  CmdData* cmdData;
   size_t bytes_processed;
   
 }Task;
