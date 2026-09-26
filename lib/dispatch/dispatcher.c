@@ -1,9 +1,9 @@
 #include "../../bin/all.h"
 
-Task* create_task(Coroutine* cmd){
-  printf("Dispatcher: Creating the coroutine with id %d \n", cmd->id);
+Task* create_task(Coroutine* coroutine, CmdData* cmd){
+  printf("Dispatcher: Creating the coroutine with id %d \n", coroutine->id);
   Task* task = malloc(sizeof(Task));
-  task->coroutine = cmd;
+  task->coroutine = coroutine;
   task->id = 1;
   return task;
 }

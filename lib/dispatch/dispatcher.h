@@ -1,7 +1,7 @@
 
 //#include "../../lib/coroutine/coroutine.h"
 
-Task* create_task(Coroutine* cmd);
+Task* create_task(Coroutine*, CmdData*);
 
 Dispatcher*  create_dispatcher();
 
