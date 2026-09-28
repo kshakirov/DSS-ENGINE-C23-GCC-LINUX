@@ -17,10 +17,22 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
 void execute_task_step(Task* task){
   task->status = TASK_RUNNING;
 
-  auto f_idx = put_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size);
   auto b_idx =  process_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size);
-  task->status = TASK_COMPLETED;
-  DEBUG_LOG("File processed in taks file id: %d block id is %d\n", f_idx, b_idx );
+  if (b_idx >= 0){
+    auto f_idx = put_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size, b_idx);
+    if (f_idx >=0 ){
+      task->status = TASK_COMPLETED;
+      DEBUG_LOG("File processed in taks file id: %d block id is %d\n", f_idx, b_idx );
+    }else {
+      task->status = TASK_FAILED;
+      DEBUG_LOG("Failed to create File entry for file %s\n", task->cmdData->filename);
+    }
+    
+  }else{
+    task->status = TASK_FAILED;
+    DEBUG_LOG("Failed to create HashIndex for file %s\n", task->cmdData->filename);
+    
+  }
 }
 
 

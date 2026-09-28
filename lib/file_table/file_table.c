@@ -32,16 +32,17 @@ static FileIndex find_index_by_hash_file_table (FileNameHash hash){
 }
 
 
-static void sync_file_metadata(FileIndex idx, FileNameHash  hash,  const char*filename, const size_t content_size){
+static void sync_file_metadata(FileIndex idx, FileNameHash  hash,  const char*filename, const size_t content_size, int32_t hashIndex){
   
   FileMetadata metadata;//for the time being only
   strcpy(metadata.filename, filename);
   metadata.fileNameHash = hash;
   metadata.size = content_size;
+  metadata.descr = hashIndex;
   fileMetadataTable[idx] = metadata;
 }
 
-FileIndex put_file(const char* filename, const char* content, const size_t content_size){
+FileIndex put_file(const char* filename, const char* content, const size_t content_size, int32_t hashIndex){
   DEBUG_LOG("Saving the file\n");
   size_t filename_len = strlen(filename);
   FileNameHash f_hash = XXH64(filename, filename_len,0);
@@ -50,7 +51,7 @@ FileIndex put_file(const char* filename, const char* content, const size_t conte
     return idx;
   }else{
     fileNameHashTable[stored_files] = f_hash;
-    sync_file_metadata(stored_files, f_hash, filename, content_size);
+    sync_file_metadata(stored_files, f_hash, filename, content_size, hashIndex);
     stored_files += 1;
     return stored_files - 1;
 
