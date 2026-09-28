@@ -4,9 +4,9 @@
 #include <string.h>
 #define CAPACITY 10000
 #define FILENAME_SIZE 256
-typedef uint32_t FileIndex ;
+typedef int32_t FileIndex ;
 
-typedef uint32_t FileNameHash ;
+typedef int32_t FileNameHash ;
 
 typedef  struct {
   char filename[FILENAME_SIZE];
@@ -41,7 +41,7 @@ static void sync_file_metadata(FileIndex idx, FileNameHash  hash,  const char*fi
   fileMetadataTable[idx] = metadata;
 }
 
-FileIndex put_file(const char* content, const char* filename, const size_t content_size){
+FileIndex put_file(const char* filename, const char* content, const size_t content_size){
   DEBUG_LOG("Saving the file\n");
   size_t filename_len = strlen(filename);
   FileNameHash f_hash = XXH64(filename, filename_len,0);

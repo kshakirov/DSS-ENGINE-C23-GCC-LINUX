@@ -3,8 +3,9 @@
 
 typedef struct CmdData {
   int id;
-  char* content;
-  char* filename;
+  const char* content;
+  const char* filename;
+  const size_t content_size;
 }CmdData;
 
 
