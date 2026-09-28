@@ -16,9 +16,9 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
 //this is the first approach to task 
 void execute_task_step(Task* task){
   task->status = TASK_RUNNING;
-  size_t content_length = strlen(task->cmdData->content);
-  auto f_idx = put_file(task->cmdData->filename, task->cmdData->content, content_length);
-  auto b_idx =  process_file(task->cmdData->filename, task->cmdData->content, content_length);
+
+  auto f_idx = put_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size);
+  auto b_idx =  process_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size);
   task->status = TASK_COMPLETED;
   DEBUG_LOG("File processed in taks file id: %d block id is %d\n", f_idx, b_idx );
 }

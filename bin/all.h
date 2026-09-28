@@ -5,7 +5,7 @@ typedef struct CmdData {
   int id;
   const char* content;
   const char* filename;
-  const size_t content_size;
+  size_t content_size;
 }CmdData;
 
 

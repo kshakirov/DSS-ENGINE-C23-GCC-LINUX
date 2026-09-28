@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "../../bin/all.h"
 
 CmdData* put(const char* filename, const char* content){
@@ -7,6 +8,7 @@ CmdData* put(const char* filename, const char* content){
   CmdData* cmd = malloc(sizeof(CmdData));//dont know yet will see
   cmd->content = content;
   cmd->filename = filename;
+  cmd->content_size = strlen(content);
   cmd->id = 1;
   return cmd;
 }
