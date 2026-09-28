@@ -6,7 +6,7 @@
 #define FILENAME_SIZE 256
 typedef int32_t FileIndex ;
 
-typedef int32_t FileNameHash ;
+typedef uint64_t FileNameHash ;
 
 typedef  struct {
   char filename[FILENAME_SIZE];

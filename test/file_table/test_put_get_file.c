@@ -11,7 +11,7 @@ int main(void){
   auto found = get_file(filename);
   printf("%s\n",found);
   assert(strcmp(found, "not found")==0);
-  auto idx  = put_file(filename, content, strlen(content));
+  auto idx  = put_file(filename, content, strlen(content), 1);
   printf("%u\n",idx);
   assert(idx >=0);
 }
