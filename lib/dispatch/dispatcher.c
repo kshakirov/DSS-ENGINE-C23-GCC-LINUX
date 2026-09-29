@@ -11,6 +11,8 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
   task->coroutine = coroutine;
   task->cmdData = cmdData;
   task->id = 1;
+  task->bytes_processed =0;
+  task->status=TASK_CREATED;
   return task;
 }
 //this is the first approach to task 
@@ -39,15 +41,17 @@ void execute_task_step(Task* task){
 Dispatcher* create_dispatcher(){
   Dispatcher* dispatcher = malloc(sizeof(Dispatcher));
   dispatcher->id = 1;
+  dispatcher->current_task =0;
+  dispatcher->task_count =0;
   return dispatcher;
 }
 
 
 void register_task(Dispatcher* dispatcher, Task* task){
-  int next_count = dispatcher->task_count + 1;
-  dispatcher->task_queue[next_count] = task;
-  dispatcher->current_task = next_count;
-  dispatcher->task_count = next_count + 1;
+  int current_count = dispatcher->task_count ;
+  dispatcher->task_queue[current_count] = task;
+  dispatcher->current_task = current_count;
+  dispatcher->task_count = current_count + 1;
   DEBUG_LOG("Regisering task %d with dispatcher %d \n",task->id,  dispatcher->id);
 }
 

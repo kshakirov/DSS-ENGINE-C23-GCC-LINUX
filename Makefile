@@ -6,10 +6,17 @@ GCCFLAGS= -std=c23 -Wall  -O2 -lxxhash -DDSS_DEBUG
 
 LDLIBS= -lxxhash
 
+SANITIZE_BIN=/tmp/dss-main-sanitize
+SANITIZE_FLAGS=-std=c23 -O1 -g3 -Wall -Wextra -Wpedantic -fno-omit-frame-pointer -fsanitize=address,undefined -DDSS_DEBUG
+
 
 bits:
 	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c lib/file_table/file_table.c  -o bin/main $(GCCFLAGS)
 #	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c  -o bin/main
+
+sanitize:
+	$(GCC) $(SANITIZE_FLAGS) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c lib/file_table/file_table.c -o $(SANITIZE_BIN) $(LDLIBS)
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1 $(SANITIZE_BIN)
 
 toys:
 	$(GCC) -c test/toys/fiber_switch.S -o test/toys/fiber_switch.o $(GCCFLAGS) $(LDLIBS)
