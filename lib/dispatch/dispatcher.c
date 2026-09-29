@@ -44,10 +44,24 @@ Dispatcher* create_dispatcher(){
 
 
 void register_task(Dispatcher* dispatcher, Task* task){
-  printf("Regisering task %d with dispatcher %d \n",task->id,  dispatcher->id);
+  int next_count = dispatcher->task_count + 1;
+  dispatcher->task_queue[next_count] = task;
+  dispatcher->current_task = next_count;
+  dispatcher->task_count = next_count + 1;
+  DEBUG_LOG("Regisering task %d with dispatcher %d \n",task->id,  dispatcher->id);
 }
 
 
 void dispatcher_run_loop(Dispatcher* dispatcher ){
-  printf("Running dispatcher, no jobs yet quitting..\n");
+  //  for(int i = 0; i < dispatcher->task_count; i++){
+  Task* task = dispatcher->task_queue[dispatcher->current_task];
+  if(task->status==TASK_CREATED){
+    execute_task_step(task);
+  }
+  if(task->status == TASK_COMPLETED || task->status == TASK_FAILED){
+    //    dispatcher-
+    DEBUG_LOG("Task id [%d successfully finished] \n", task->id);
+  }
+  //}
+  DEBUG_LOG("Running dispatcher, no jobs yet quitting..\n");
 }

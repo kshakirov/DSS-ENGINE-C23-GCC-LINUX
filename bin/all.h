@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define TASK_QUEUE_CAPACITY 100
+
 typedef struct CmdData {
   int id;
   const char* content;
@@ -23,10 +25,6 @@ typedef enum{
 }TASK_STATUS;
   
 
-typedef struct {
-  int id;
-  
-}Dispatcher;
 
 
 typedef struct {
@@ -37,5 +35,12 @@ typedef struct {
   size_t bytes_processed;
   
 }Task;
+
+typedef struct {
+  int id;
+  Task* task_queue[TASK_QUEUE_CAPACITY];
+  size_t task_count;
+  size_t current_task;
+}Dispatcher;
 
 
