@@ -10,7 +10,22 @@
 #include "../lib/file_table/file_table.h"
 int main(int argc, char** argv){
   const char* filename = "hello.txt";
-  const char* content = "hello,world";
+  //const char* content = "hello,world";
+  char content[2049];
+  for(int i = 0;i < 2048;i++){
+    if(i < 512)
+      content[i] = 'a';
+    else if( i < 1024)
+      content[i]= 'b';
+    else if( i < 1024 + 512)
+      content[i]= 'c';
+    else
+      content[i]='d';
+	
+    
+  }
+  content[2048]='\0';
+
   printf("Creating the tract without the dispatcher \n");
   //auto clear
   Dispatcher* dispatcher = create_dispatcher();

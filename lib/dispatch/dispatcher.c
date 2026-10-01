@@ -4,6 +4,7 @@
 #include "../../debug.h"
 #include <string.h>
 
+#define  CHUNK_SIZE 512
 
 Task* create_task(Coroutine* coroutine, CmdData* cmdData){
   printf("Dispatcher: Creating the coroutine with id %d \n", coroutine->id);
@@ -18,22 +19,32 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
 //this is the first approach to task 
 void execute_task_step(Task* task){
   task->status = TASK_RUNNING;
-
-  auto b_idx =  process_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size);
-  if (b_idx >= 0){
-    auto f_idx = put_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size, b_idx);
-    if (f_idx >=0 ){
-      task->status = TASK_COMPLETED;
-      DEBUG_LOG("File processed in taks file id: %d block id is %d\n", f_idx, b_idx );
-    }else {
+  for (size_t i =0; i < task->cmdData->content_size / 512 ; i++){
+    size_t block = i;
+    size_t offset = i * 512;
+    size_t current_size = task->cmdData->content_size - offset > CHUNK_SIZE ? CHUNK_SIZE : task->cmdData->content_size - CHUNK_SIZE;
+    DEBUG_LOG("Current offset is %lu,block is %lu, current_size is %lu, content size is %lu\n", offset, block, current_size, task->cmdData->content_size);
+    auto b_idx =  process_file(task->cmdData->filename, task->cmdData->content + offset, current_size);
+    if (b_idx >= 0){
+      auto f_idx = put_file(task->cmdData->filename, task->cmdData->content + offset, current_size, b_idx);
+      if (f_idx >=0 ){
+	//	task->status = TASK_COMP;
+	DEBUG_LOG("File chunk processed in tasks file id: %d block id is %d chunk is %lu \n", f_idx, b_idx, i );
+      }else {
+	task->status = TASK_FAILED;
+	DEBUG_LOG("Failed to create File entry for file %s\n", task->cmdData->filename);
+	break;
+      }
+    
+    }else{
       task->status = TASK_FAILED;
-      DEBUG_LOG("Failed to create File entry for file %s\n", task->cmdData->filename);
+      DEBUG_LOG("Failed to create HashIndex for file %s\n", task->cmdData->filename);
+      break;
+    
     }
-    
-  }else{
-    task->status = TASK_FAILED;
-    DEBUG_LOG("Failed to create HashIndex for file %s\n", task->cmdData->filename);
-    
+  }
+  if(task->status == TASK_RUNNING){
+    task->status = TASK_COMPLETED;
   }
 }
 

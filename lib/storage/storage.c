@@ -47,7 +47,7 @@ static void sync_index_block_table(HashIndex idx, BlockAddress address){
 
 
 HashIndex process_file(const char* filename, const char* content, size_t size){
-  printf("Storage: I am processing the file %s with content %s \n", filename, content);
+  //  printf("Storage: I am processing the file %s with content %s \n", filename, content);
   BlockHash hash = XXH64(content, size,0);
   HashIndex idx =   find_index_hash_table(hash);
   if(idx > -1){
