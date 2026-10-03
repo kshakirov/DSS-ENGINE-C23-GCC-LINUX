@@ -43,9 +43,13 @@ void execute_task_step(Task* task){
   }
   if(task->status == TASK_RUNNING){
     
-    auto f_idx = put_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size, b_idx);
-    if(f_idx >=0)
+    auto f_idx = put_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size, task->block_indices);
+    if(f_idx >=0){
       task->status = TASK_COMPLETED;
+      task->block_capacity =0;
+      task->block_count =0;
+      task->block_indices = nullptr;
+    }
     else
       task->status = TASK_FAILED;
 

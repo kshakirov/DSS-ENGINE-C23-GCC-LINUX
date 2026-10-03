@@ -15,6 +15,7 @@ typedef  struct {
   FileNameHash fileNameHash;
   size_t block_count;
   //dont' now how make Block address available her
+  HashIndex* block_indices;
 }FileMetadata;
 
 static size_t stored_files;
@@ -32,17 +33,18 @@ static FileIndex find_index_by_hash_file_table (FileNameHash hash){
 }
 
 
-static void sync_file_metadata(FileIndex idx, FileNameHash  hash,  const char*filename, const size_t content_size, int32_t hashIndex){
+static void sync_file_metadata(FileIndex idx, FileNameHash  hash,  const char*filename, const size_t content_size, HashIndex* block_indices){
   
   FileMetadata metadata;//for the time being only
   strcpy(metadata.filename, filename);
   metadata.fileNameHash = hash;
   metadata.size = content_size;
-  metadata.descr = hashIndex;
+  //  metadata.descr = hashIndex;
+  metadata.block_indices = block_indices;
   fileMetadataTable[idx] = metadata;
 }
 
-FileIndex put_file(const char* filename, const char* content, const size_t content_size, int32_t hashIndex){
+FileIndex put_file(const char* filename, const char* content, const size_t content_size, HashIndex* block_indices){
   DEBUG_LOG("Saving the file\n");
   size_t filename_len = strlen(filename);
   FileNameHash f_hash = XXH64(filename, filename_len,0);
@@ -51,7 +53,7 @@ FileIndex put_file(const char* filename, const char* content, const size_t conte
     return idx;
   }else{
     fileNameHashTable[stored_files] = f_hash;
-    sync_file_metadata(stored_files, f_hash, filename, content_size, hashIndex);
+    sync_file_metadata(stored_files, f_hash, filename, content_size, block_indices);
     stored_files += 1;
     return stored_files - 1;
 
@@ -66,7 +68,7 @@ const char* get_file(const char* filename){
   FileNameHash f_hash = XXH64(filename, filename_len,0);
   for (size_t i = 0; i < stored_files;i++){
     if(fileNameHashTable[i] == f_hash){
-      FileMetadata metadata = fileMetadataTable[i];
+      //FileMetadata metadata = fileMetadataTable[i];
       DEBUG_LOG("Found file and its metadata, returning for the time being its stored name \n");
       return "found";
     }
