@@ -7,7 +7,7 @@
 
 typedef uint64_t BlockHash;
 typedef void *BlockAddress;
-typedef int32_t HashIndex;
+
 static size_t stored_blocks;
 
 #define  CAPACITY 10000

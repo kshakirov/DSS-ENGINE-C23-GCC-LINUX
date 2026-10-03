@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../lib/storage/storage.h"
 
 #define TASK_QUEUE_CAPACITY 100
 
@@ -33,6 +34,10 @@ typedef struct {
   TASK_STATUS status;
   CmdData* cmdData;
   size_t bytes_processed;
+  HashIndex* block_indices;
+  size_t block_count;
+  size_t block_capacity;
+ 
   
 }Task;
 
@@ -41,6 +46,7 @@ typedef struct {
   Task* task_queue[TASK_QUEUE_CAPACITY];
   size_t task_count;
   size_t current_task;
+  
 }Dispatcher;
 
 
