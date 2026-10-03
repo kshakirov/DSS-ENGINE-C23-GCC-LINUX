@@ -1,6 +1,7 @@
 #include "../../lib/file_table/file_table.h"
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -11,7 +12,10 @@ int main(void){
   auto found = get_file(filename);
   printf("%s\n",found);
   assert(strcmp(found, "not found")==0);
-  auto idx  = put_file(filename, content, strlen(content), 1);
+  HashIndex* block_indices = malloc(sizeof *block_indices);
+  assert(block_indices != nullptr);
+  block_indices[0] = 1;
+  auto idx  = put_file(filename, content, strlen(content), block_indices, 1);
   printf("%u\n",idx);
   assert(idx >=0);
 }
