@@ -43,6 +43,12 @@ static void sync_file_metadata(FileIndex idx, FileNameHash  hash,  const char*fi
   
   fileMetadataTable[idx] = metadata;
 }
+static void free_metadata(FileIndex idx){
+  FileMetadata metadata = fileMetadataTable[idx];
+  free(metadata.block_indices);
+
+}
+
 
 FileIndex put_file(const char* filename, const size_t content_size, HashIndex* block_indices, size_t block_count){
   DEBUG_LOG("Saving the file\n");
@@ -50,6 +56,8 @@ FileIndex put_file(const char* filename, const size_t content_size, HashIndex* b
   FileNameHash f_hash = XXH64(filename, filename_len,0);
   FileIndex idx = find_index_by_hash_file_table(f_hash);
   if(idx > -1){
+    free_metadata(idx);
+    sync_file_metadata(idx, f_hash, filename, content_size, block_indices, block_count);
     return idx;
   }else{
     fileNameHashTable[stored_files] = f_hash;
