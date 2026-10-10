@@ -52,7 +52,7 @@ void execute_task_step(Task* task){
   }
   if(task->status == TASK_RUNNING){
     
-    auto f_idx = put_file(task->cmdData->filename, task->cmdData->content, task->cmdData->content_size, task->block_indices, task->block_count);
+    auto f_idx = put_file(task->cmdData->filename, task->cmdData->content_size, task->block_indices, task->block_count);
     if(f_idx >=0){
       task->status = TASK_COMPLETED;
       task->block_capacity =0;

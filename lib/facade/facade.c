@@ -3,12 +3,12 @@
 #include <string.h>
 #include "../../bin/all.h"
 
-CmdData* put(const char* filename, const char* content){
+CmdData* put(const char* filename, const char* content, const size_t content_size){
   //  printf("Facade: put %s -> %s\n", filename, content);
   CmdData* cmd = malloc(sizeof(CmdData));//dont know yet will see
   cmd->content = content;
   cmd->filename = filename;
-  cmd->content_size = strlen(content);
+  cmd->content_size = content_size;
   cmd->id = 1;
   return cmd;
 }

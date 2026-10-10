@@ -15,7 +15,7 @@ int main(void){
   HashIndex* block_indices = malloc(sizeof *block_indices);
   assert(block_indices != nullptr);
   block_indices[0] = 1;
-  auto idx  = put_file(filename, content, strlen(content), block_indices, 1);
+  auto idx  = put_file(filename, strlen(content), block_indices, 1);
   printf("%u\n",idx);
   assert(idx >=0);
 }

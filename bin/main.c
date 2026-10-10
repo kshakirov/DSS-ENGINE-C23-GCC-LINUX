@@ -22,15 +22,13 @@ int main(int argc, char** argv){
       content[i]= 'c';
     else
       content[i]='d';
-	
-    
   }
-  content[CONTENT_SIZE - 1]='\0';
+  
 
   printf("Creating the tract without the dispatcher \n");
   //auto clear
   Dispatcher* dispatcher = create_dispatcher();
-  CmdData* data = put(filename, content);
+  CmdData* data = put(filename, content, CONTENT_SIZE);
   
   Coroutine* coroutine = create_coroutine(data);
   Task* task = create_task(coroutine, data);

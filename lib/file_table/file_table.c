@@ -11,7 +11,6 @@ typedef uint64_t FileNameHash ;
 typedef  struct {
   char filename[FILENAME_SIZE];
   size_t size;
-  FileIndex descr;
   FileNameHash fileNameHash;
   size_t block_count;
   //dont' now how make Block address available her
@@ -39,14 +38,13 @@ static void sync_file_metadata(FileIndex idx, FileNameHash  hash,  const char*fi
   strcpy(metadata.filename, filename);
   metadata.fileNameHash = hash;
   metadata.size = content_size;
-  //  metadata.descr = hashIndex;
   metadata.block_indices = block_indices;
   metadata.block_count = block_count;
   
   fileMetadataTable[idx] = metadata;
 }
 
-FileIndex put_file(const char* filename, const char* content, const size_t content_size, HashIndex* block_indices, size_t block_count){
+FileIndex put_file(const char* filename, const size_t content_size, HashIndex* block_indices, size_t block_count){
   DEBUG_LOG("Saving the file\n");
   size_t filename_len = strlen(filename);
   FileNameHash f_hash = XXH64(filename, filename_len,0);
