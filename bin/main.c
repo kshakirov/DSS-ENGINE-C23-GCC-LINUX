@@ -11,8 +11,9 @@
 int main(int argc, char** argv){
   const char* filename = "hello.txt";
   //const char* content = "hello,world";
-  char content[2049];
-  for(int i = 0;i < 2048;i++){
+  #define  CONTENT_SIZE 2248
+  char content[CONTENT_SIZE];
+  for(int i = 0;i < CONTENT_SIZE;i++){
     if(i < 512)
       content[i] = 'a';
     else if( i < 1024)
@@ -24,7 +25,7 @@ int main(int argc, char** argv){
 	
     
   }
-  content[2048]='\0';
+  content[CONTENT_SIZE - 1]='\0';
 
   printf("Creating the tract without the dispatcher \n");
   //auto clear

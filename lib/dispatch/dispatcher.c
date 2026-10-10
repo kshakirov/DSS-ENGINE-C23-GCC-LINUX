@@ -6,6 +6,15 @@
 
 #define  CHUNK_SIZE 512
 
+
+static size_t get_block_count(size_t content_size){
+    size_t block_count =  content_size / CHUNK_SIZE;
+
+  if (content_size % CHUNK_SIZE != 0)
+      block_count++;
+  return block_count;
+}  
+
 Task* create_task(Coroutine* coroutine, CmdData* cmdData){
   printf("Dispatcher: Creating the coroutine with id %d \n", coroutine->id);
   Task* task = malloc(sizeof(Task));
@@ -15,8 +24,8 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
   task->bytes_processed =0;
   task->status=TASK_CREATED;
   task->block_count = 0;
-  task->block_capacity = cmdData->content_size / 512 + 1;
-  task->block_indices = malloc(sizeof(HashIndex)* (cmdData->content_size / 512 + 1 ));
+  task->block_capacity = get_block_count(cmdData->content_size);
+  task->block_indices = malloc(sizeof(HashIndex)* (task->block_capacity ));
   
   return task;
 }
@@ -24,7 +33,7 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
 void execute_task_step(Task* task){
   task->status = TASK_RUNNING;
   HashIndex b_idx=0; //temporaly make all work will be overridden by real array of blocks
-  for (size_t i =0; i < task->cmdData->content_size / 512 ; i++){
+  for (size_t i =0; i < task->block_capacity ; i++){
     size_t block = i;
     size_t offset = i * 512;
     size_t current_size = task->cmdData->content_size - offset > CHUNK_SIZE ? CHUNK_SIZE : task->cmdData->content_size - offset;
