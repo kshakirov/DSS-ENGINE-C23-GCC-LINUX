@@ -17,6 +17,9 @@ typedef  struct {
   HashIndex* block_indices;
 }FileMetadata;
 
+
+
+
 static size_t stored_files;
 static FileNameHash fileNameHashTable[CAPACITY];
 
@@ -70,21 +73,23 @@ FileIndex put_file(const char* filename, const size_t content_size, HashIndex* b
 }
 
 
-const char* get_file(const char* filename){
+FILE_VIEW  get_file(const char* filename){
   DEBUG_LOG("Getting  the file\n");
   size_t filename_len = strlen(filename);
   FileNameHash f_hash = XXH64(filename, filename_len,0);
   FileIndex idx = find_index_by_hash_file_table(f_hash);
+  FILE_VIEW fv;
   if(idx > -1){
     FileMetadata metadata = fileMetadataTable[idx];
-    for(size_t i = 0; i < metadata.block_count; i++){
-      //do job here
-      DEBUG_LOG("Gettting block %lu \n", i);
-      
-    }
-    return "";
+    fv.found = true;
+    fv.block_count = metadata.block_count;
+    fv.block_indices = metadata.block_indices;
+    fv.content_size = metadata.size;
+
+    return fv;
   }else {
-    return "";
+    fv.found = false;
+    return fv;
   }
   
 

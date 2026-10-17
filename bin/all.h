@@ -47,7 +47,9 @@ typedef struct {
   HashIndex* block_indices;
   size_t block_count;
   size_t block_capacity;
- 
+  size_t source_block_count;
+  size_t current_block;
+  const HashIndex* source_block_indices;
   
 }Task;
 
