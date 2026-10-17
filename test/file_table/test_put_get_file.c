@@ -18,4 +18,12 @@ int main(void){
   auto idx  = put_file(filename, strlen(content), block_indices, 1);
   printf("%u\n",idx);
   assert(idx >=0);
+
+  HashIndex* updated_block_indices = malloc(2 * sizeof *updated_block_indices);
+  assert(updated_block_indices != nullptr);
+  updated_block_indices[0] = 2;
+  updated_block_indices[1] = 3;
+
+  auto updated_idx = put_file(filename, strlen(content), updated_block_indices, 2);
+  assert(updated_idx == idx);
 }
