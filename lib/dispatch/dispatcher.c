@@ -30,7 +30,7 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
   return task;
 }
 //this is the first approach to task 
-void execute_task_step(Task* task){
+void execute_put_step(Task* task){
   task->status = TASK_RUNNING;
   HashIndex b_idx=0; //temporaly make all work will be overridden by real array of blocks
   for (size_t i =0; i < task->block_capacity ; i++){
@@ -65,6 +65,11 @@ void execute_task_step(Task* task){
   }
 }
 
+void execute_get_step(Task* task){
+  DEBUG_LOG("running get task %d \n", task->id);
+}
+
+
 
 Dispatcher* create_dispatcher(){
   Dispatcher* dispatcher = malloc(sizeof(Dispatcher));
@@ -88,7 +93,17 @@ void dispatcher_run_loop(Dispatcher* dispatcher ){
   //  for(int i = 0; i < dispatcher->task_count; i++){
   Task* task = dispatcher->task_queue[dispatcher->current_task];
   if(task->status==TASK_CREATED){
-    execute_task_step(task);
+    switch (task->cmdData->type) {
+    case CMD_PUT:{
+      execute_put_step(task);
+      break;
+    };
+    case CMD_GET:{
+    }
+      
+
+    }
+
   }
   if(task->status == TASK_COMPLETED || task->status == TASK_FAILED){
     //    dispatcher-

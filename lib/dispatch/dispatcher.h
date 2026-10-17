@@ -9,5 +9,6 @@ void register_task(Dispatcher* , Task* );
 
 void dispatcher_run_loop(Dispatcher*);
 
-void execute_task_step(Task*);
+void execute_put_step(Task*);
+void execute_get_step(Task*);
 
