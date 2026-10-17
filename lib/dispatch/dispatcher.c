@@ -32,26 +32,32 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
 //this is the first approach to task 
 void execute_put_step(Task* task){
   task->status = TASK_RUNNING;
-  HashIndex b_idx=0; //temporaly make all work will be overridden by real array of blocks
-  for (size_t i =0; i < task->block_capacity ; i++){
-    size_t block = i;
-    size_t offset = i * 512;
-    size_t current_size = task->cmdData->content_size - offset > CHUNK_SIZE ? CHUNK_SIZE : task->cmdData->content_size - offset;
 
-    DEBUG_LOG("Current offset is %lu,block is %lu, current_size is %lu, content size is %lu\n", offset, block, current_size, task->cmdData->content_size);
-    b_idx =  process_file(task->cmdData->filename, task->cmdData->content + offset, current_size);
-    if (b_idx >= 0){
-      task->block_indices[task->block_count] = b_idx;
-      task->block_count += 1;
-      DEBUG_LOG("File chunk processed in tasks  block id is %d chunk is %lu, block_counts is %lu\n",  b_idx, i, task->block_count );
-    }else{
+  if(task->bytes_processed < task->cmdData->content_size){
+    size_t offset = task->bytes_processed;
+    size_t remaining = task->cmdData->content_size - offset;
+    size_t current_size = remaining > CHUNK_SIZE ? CHUNK_SIZE : remaining;
+
+    DEBUG_LOG("Current offset is %lu, current_size is %lu, content size is %lu\n", offset, current_size, task->cmdData->content_size);
+    HashIndex b_idx = process_file(task->cmdData->filename, task->cmdData->content + offset, current_size);
+    if (b_idx < 0){
       task->status = TASK_FAILED;
       DEBUG_LOG("Failed to create HashIndex for file %s\n", task->cmdData->filename);
-      break;
+      return;
+    }
+
+    task->block_indices[task->block_count] = b_idx;
+    task->block_count += 1;
+    task->bytes_processed += current_size;
+    DEBUG_LOG("File chunk processed in task: block id is %d, block count is %lu, bytes processed is %lu\n", b_idx, task->block_count, task->bytes_processed);
+
+    if(task->bytes_processed < task->cmdData->content_size){
+      task->status = TASK_READY;
+      return;
     }
   }
+
   if(task->status == TASK_RUNNING){
-    
     auto f_idx = put_file(task->cmdData->filename, task->cmdData->content_size, task->block_indices, task->block_count);
     if(f_idx >=0){
       task->status = TASK_COMPLETED;
@@ -94,27 +100,38 @@ void register_task(Dispatcher* dispatcher, Task* task){
 
 
 void dispatcher_run_loop(Dispatcher* dispatcher ){
-  for(int i = 0; i < dispatcher->task_count; i++){
-    Task* task = dispatcher->task_queue[i];
-    if(task->status==TASK_CREATED){
-      switch (task->cmdData->type) {
-      case CMD_PUT:{
-	execute_put_step(task);
-	break;
-      };
-      case CMD_GET:{
-	execute_get_step(task);
+  int has_ready_tasks;
+  do{
+    has_ready_tasks = 0;
+    for(size_t i = 0; i < dispatcher->task_count; i++){
+      Task* task = dispatcher->task_queue[i];
+      int task_was_run = 0;
+      if(task->status == TASK_CREATED || task->status == TASK_READY){
+	task_was_run = 1;
+	switch (task->cmdData->type) {
+	case CMD_PUT:{
+	  execute_put_step(task);
+	  break;
+	}
+	case CMD_GET:{
+	  execute_get_step(task);
+	  break;
+	}
+	default:{
+	  task->status = TASK_FAILED;
+	  break;
+	}
+        }
       }
-      
-
+      if(task->status == TASK_READY){
+	has_ready_tasks = 1;
       }
-
+      if(task_was_run && task->status == TASK_COMPLETED){
+	DEBUG_LOG("Task id [%d successfully finished] \n", task->id);
+      }else if(task_was_run && task->status == TASK_FAILED){
+	DEBUG_LOG("Task id [%d failed] \n", task->id);
+      }
     }
-    if(task->status == TASK_COMPLETED || task->status == TASK_FAILED){
-      //    dispatcher-
-      DEBUG_LOG("Task id [%d successfully finished] \n", task->id);
-    }
-  }
-  //}
+  }while(has_ready_tasks);
   DEBUG_LOG("Running dispatcher, no jobs yet quitting..\n");
 }

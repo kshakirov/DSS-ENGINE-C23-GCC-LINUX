@@ -29,6 +29,7 @@ typedef struct  {
 
 typedef enum{
   TASK_CREATED,
+  TASK_READY,
   TASK_COMPLETED,
   TASK_RUNNING,
   TASK_FAILED
@@ -57,5 +58,4 @@ typedef struct {
   size_t current_task;
   
 }Dispatcher;
-
 
