@@ -10,9 +10,20 @@ CmdData* put(const char* filename, const char* content, const size_t content_siz
   cmd->filename = filename;
   cmd->content_size = content_size;
   cmd->id = 1;
+  cmd->type = CMD_PUT;
+  cmd->result = nullptr;
+  cmd->result_size =0;
   return cmd;
 }
 
-char* get(char* filename){
-  return "this is content";
+CmdData* get(const char* filename){
+  CmdData* cmd = malloc(sizeof(CmdData));//dont know yet will see
+  cmd->filename = filename;
+  cmd->type = CMD_GET;
+  cmd->content = nullptr;
+  cmd->content_size = 0;
+  cmd->id = 2;
+  cmd->result = nullptr;
+  cmd->result_size = 0;
+  return cmd;
 }

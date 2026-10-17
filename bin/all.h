@@ -4,11 +4,20 @@
 
 #define TASK_QUEUE_CAPACITY 100
 
+typedef  enum{
+  CMD_PUT,
+  CMD_GET
+}CMD_TYPE;
+
 typedef struct CmdData {
   int id;
   const char* content;
   const char* filename;
   size_t content_size;
+  CMD_TYPE type;
+  char* result;
+  size_t result_size;
+  
 }CmdData;
 
 
