@@ -36,7 +36,7 @@ int main(int argc, char** argv){
   CmdData* data_out = get(filename);
   Coroutine* coroutine_2 = create_coroutine(data_out);
   Task* task_2 = create_task(coroutine_2, data_out);
-  //register_task(dispatcher, task_2);
+  register_task(dispatcher, task_2);
   dispatcher_run_loop(dispatcher);
   //execute_task_step(task);
   

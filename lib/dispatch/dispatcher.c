@@ -8,10 +8,10 @@
 
 
 static size_t get_block_count(size_t content_size){
-    size_t block_count =  content_size / CHUNK_SIZE;
+  size_t block_count =  content_size / CHUNK_SIZE;
 
   if (content_size % CHUNK_SIZE != 0)
-      block_count++;
+    block_count++;
   return block_count;
 }  
 
@@ -41,9 +41,9 @@ void execute_put_step(Task* task){
     DEBUG_LOG("Current offset is %lu,block is %lu, current_size is %lu, content size is %lu\n", offset, block, current_size, task->cmdData->content_size);
     b_idx =  process_file(task->cmdData->filename, task->cmdData->content + offset, current_size);
     if (b_idx >= 0){
-	task->block_indices[task->block_count] = b_idx;
-	task->block_count += 1;
-	DEBUG_LOG("File chunk processed in tasks  block id is %d chunk is %lu, block_counts is %lu\n",  b_idx, i, task->block_count );
+      task->block_indices[task->block_count] = b_idx;
+      task->block_count += 1;
+      DEBUG_LOG("File chunk processed in tasks  block id is %d chunk is %lu, block_counts is %lu\n",  b_idx, i, task->block_count );
     }else{
       task->status = TASK_FAILED;
       DEBUG_LOG("Failed to create HashIndex for file %s\n", task->cmdData->filename);
@@ -66,7 +66,7 @@ void execute_put_step(Task* task){
 }
 
 void execute_get_step(Task* task){
-  DEBUG_LOG("running get task %d \n", task->id);
+  DEBUG_LOG("Running get task %d \n", task->id);
 }
 
 
@@ -90,24 +90,26 @@ void register_task(Dispatcher* dispatcher, Task* task){
 
 
 void dispatcher_run_loop(Dispatcher* dispatcher ){
-  //  for(int i = 0; i < dispatcher->task_count; i++){
-  Task* task = dispatcher->task_queue[dispatcher->current_task];
-  if(task->status==TASK_CREATED){
-    switch (task->cmdData->type) {
-    case CMD_PUT:{
-      execute_put_step(task);
-      break;
-    };
-    case CMD_GET:{
-    }
+  for(int i = 0; i < dispatcher->task_count; i++){
+    Task* task = dispatcher->task_queue[i];
+    if(task->status==TASK_CREATED){
+      switch (task->cmdData->type) {
+      case CMD_PUT:{
+	execute_put_step(task);
+	break;
+      };
+      case CMD_GET:{
+	execute_get_step(task);
+      }
       
 
-    }
+      }
 
-  }
-  if(task->status == TASK_COMPLETED || task->status == TASK_FAILED){
-    //    dispatcher-
-    DEBUG_LOG("Task id [%d successfully finished] \n", task->id);
+    }
+    if(task->status == TASK_COMPLETED || task->status == TASK_FAILED){
+      //    dispatcher-
+      DEBUG_LOG("Task id [%d successfully finished] \n", task->id);
+    }
   }
   //}
   DEBUG_LOG("Running dispatcher, no jobs yet quitting..\n");
