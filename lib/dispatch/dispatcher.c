@@ -67,6 +67,10 @@ void execute_put_step(Task* task){
 
 void execute_get_step(Task* task){
   DEBUG_LOG("Running get task %d \n", task->id);
+  
+  
+  char*  block = get_file(task->cmdData->filename);
+  task->status= TASK_COMPLETED;
 }
 
 

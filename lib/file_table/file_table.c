@@ -74,13 +74,18 @@ const char* get_file(const char* filename){
   DEBUG_LOG("Getting  the file\n");
   size_t filename_len = strlen(filename);
   FileNameHash f_hash = XXH64(filename, filename_len,0);
-  for (size_t i = 0; i < stored_files;i++){
-    if(fileNameHashTable[i] == f_hash){
-      //FileMetadata metadata = fileMetadataTable[i];
-      DEBUG_LOG("Found file and its metadata, returning for the time being its stored name \n");
-      return "found";
+  FileIndex idx = find_index_by_hash_file_table(f_hash);
+  if(idx > -1){
+    FileMetadata metadata = fileMetadataTable[idx];
+    for(size_t i = 0; i < metadata.block_count; i++){
+      //do job here
+      DEBUG_LOG("Gettting block %lu \n", i);
+      
     }
+    return "";
+  }else {
+    return "";
   }
-  return "not found"; //for the time being
+  
 
 }
