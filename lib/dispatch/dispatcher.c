@@ -26,6 +26,9 @@ Task* create_task(Coroutine* coroutine, CmdData* cmdData){
   task->block_count = 0;
   task->block_capacity = get_block_count(cmdData->content_size);
   task->block_indices = malloc(sizeof(HashIndex)* (task->block_capacity ));
+  task->source_block_count = 0;
+  task->current_block = 0;
+  task->source_block_indices = nullptr;
   
   return task;
 }
@@ -73,39 +76,56 @@ void execute_put_step(Task* task){
 
 void execute_get_step(Task* task){
   DEBUG_LOG("Running get task %d \n", task->id);
-  FILE_VIEW  fv = get_file(task->cmdData->filename);
-  if(fv.found){
-    size_t remaining = fv.content_size;
-    size_t offset = 0;
-    unsigned char* buffer = malloc(fv.content_size);
+  task->status = TASK_RUNNING;
 
-    DEBUG_LOG("blocks are %lu\n", fv.block_count);
-    for(size_t i =0;i < fv.block_count; i++){
-      DEBUG_LOG("getting block %d\n",fv.block_indices[i]);
-      void const*  block_bytes = get_block(fv.block_indices[i]);
-
-
-
-      if(remaining < 512){
-	DEBUG_LOG("Attention: remains %lu \n",  remaining);
-	memcpy(buffer + offset, block_bytes, remaining);
-      }else{
-	DEBUG_LOG("remains %lu \n",  remaining);
-	memcpy(buffer + offset, block_bytes, 512);
-	remaining -= 512;
-	offset += 512;
-      }
-      
-      
+  if(task->source_block_indices == nullptr){
+    FILE_VIEW fv = get_file(task->cmdData->filename);
+    if(!fv.found){
+      DEBUG_LOG("Can't find file %s \n", task->cmdData->filename);
+      task->status = TASK_FAILED;
+      return;
     }
-    task->cmdData->result = buffer;
-    task->cmdData->result_size= fv.content_size;
-    task->status= TASK_COMPLETED;
+
+    task->source_block_indices = fv.block_indices;
+    task->source_block_count = fv.block_count;
+    task->cmdData->result_size = fv.content_size;
+
+    if(fv.content_size > 0){
+      task->cmdData->result = malloc(fv.content_size);
+      if(task->cmdData->result == nullptr){
+	task->status = TASK_FAILED;
+	return;
+      }
+    }
+  }
+
+  if(task->current_block < task->source_block_count){
+    HashIndex block_index = task->source_block_indices[task->current_block];
+    void const* block_bytes = get_block(block_index);
+    if(block_bytes == nullptr){
+      task->status = TASK_FAILED;
+      return;
+    }
+
+    size_t remaining = task->cmdData->result_size - task->bytes_processed;
+    size_t current_size = remaining > CHUNK_SIZE ? CHUNK_SIZE : remaining;
+    memcpy(task->cmdData->result + task->bytes_processed, block_bytes, current_size);
+    task->bytes_processed += current_size;
+    task->current_block += 1;
+
+    DEBUG_LOG("File block restored: block id is %d, current block is %lu, bytes processed is %lu\n", block_index, task->current_block, task->bytes_processed);
+
+    if(task->current_block < task->source_block_count){
+      task->status = TASK_READY;
+      return;
+    }
+  }
+
+  if(task->bytes_processed == task->cmdData->result_size){
+    task->status = TASK_COMPLETED;
   }else{
-    DEBUG_LOG("Can't find file %s \n",task->cmdData->filename);
     task->status = TASK_FAILED;
   }
-    
 }
 
 

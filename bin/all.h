@@ -15,10 +15,11 @@ typedef struct CmdData {
   const char* filename;
   size_t content_size;
   CMD_TYPE type;
-  char* result;
+  unsigned char* result;
   size_t result_size;
   
-}CmdData;
+}
+CmdData;
 
 
 typedef struct  {
