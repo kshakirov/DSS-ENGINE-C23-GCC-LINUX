@@ -74,7 +74,38 @@ void execute_put_step(Task* task){
 void execute_get_step(Task* task){
   DEBUG_LOG("Running get task %d \n", task->id);
   FILE_VIEW  fv = get_file(task->cmdData->filename);
+  if(fv.found){
+    size_t remaining = fv.content_size;
+    size_t offset = 0;
+    unsigned char* buffer = malloc(fv.content_size);
+
+    DEBUG_LOG("blocks are %lu\n", fv.block_count);
+    for(size_t i =0;i < fv.block_count; i++){
+      DEBUG_LOG("getting block %d\n",fv.block_indices[i]);
+      void const*  block_bytes = get_block(fv.block_indices[i]);
+
+
+
+      if(remaining < 512){
+	DEBUG_LOG("Attention: remains %lu \n",  remaining);
+	memcpy(buffer + offset, block_bytes, remaining);
+      }else{
+	DEBUG_LOG("remains %lu \n",  remaining);
+	memcpy(buffer + offset, block_bytes, 512);
+	remaining -= 512;
+	offset += 512;
+      }
+      
+      
+    }
+    task->cmdData->result = buffer;
+    task->cmdData->result_size= fv.content_size;
     task->status= TASK_COMPLETED;
+  }else{
+    DEBUG_LOG("Can't find file %s \n",task->cmdData->filename);
+    task->status = TASK_FAILED;
+  }
+    
 }
 
 

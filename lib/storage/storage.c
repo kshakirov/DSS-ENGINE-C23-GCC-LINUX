@@ -18,6 +18,10 @@ static BlockHash blockHashTable[CAPACITY];
 static BlockAddress blockAddressTable[CAPACITY];
 
 
+void const *get_block(HashIndex idx){
+  return  blockAddressTable[idx];
+}
+
 //those functions will work within process_file 
 static HashIndex find_index_hash_table (BlockHash hash){
 
