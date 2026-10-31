@@ -23,8 +23,12 @@ CmdData;
 
 
 typedef struct  {
- int id;
-  
+  int id;
+  void* rsp;          // Сюда сохраним расчетный указатель стека
+  void* stack_bottom; // Храним для будущего munmap
+  void (*entry) (CmdData*);
+  CmdData* data;
+ 
  
 }Coroutine;
 
