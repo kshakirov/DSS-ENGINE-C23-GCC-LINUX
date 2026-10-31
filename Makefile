@@ -31,4 +31,5 @@ test_filetable:
 	$(GCC) lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c test/file_table/test_put_get_file.c  lib/file_table/file_table.c  -o test/file_table/test_put_get_file		$(GCCFLAGS) $(LDLIBS)
 	$(GCC) test/file_table/test_get_file.c  lib/file_table/file_table.c  -o test/file_table/test_get_file		$(GCCFLAGS) $(LDLIBS)
 test_coroutine:
-	$(GCC) test/coroutine/test_coroutine.c lib/coroutine/coroutine.c  -o test/coroutine/test_coroutine		$(GCCFLAGS) $(LDLIBS)
+	$(GCC) -c lib/coroutine/fiber_switch.S -o test/coroutine/fiber_switch.o $(GCCFLAGS) $(LDLIBS)	
+	$(GCC) test/coroutine/fiber_switch.o test/coroutine/test_coroutine.c lib/coroutine/coroutine.c  -o test/coroutine/test_coroutine		$(GCCFLAGS) $(LDLIBS)
