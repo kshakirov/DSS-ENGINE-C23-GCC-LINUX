@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "../lib/facade/facade.h"
-#include "../lib/coroutine/coroutine.h"
 #include "../lib/dispatch/dispatcher.h"
 #include "../lib/storage/storage.h"
 #include "../lib/file_table/file_table.h"
@@ -30,13 +29,13 @@ int main(int argc, char** argv){
   Dispatcher* dispatcher = create_dispatcher();
   CmdData* data = put(filename, content, CONTENT_SIZE);
   
-  Coroutine* coroutine = create_coroutine(data);
-  Task* task = create_task(coroutine, data);
+  TaskContext* context = create_task_context(data);
+  Task* task = create_task(context, data);
   register_task(dispatcher, task);
   dispatcher_run_loop(dispatcher);
   CmdData* data_out = get(filename);
-  Coroutine* coroutine_2 = create_coroutine(data_out);
-  Task* task_2 = create_task(coroutine_2, data_out);
+  TaskContext* context_2 = create_task_context(data_out);
+  Task* task_2 = create_task(context_2, data_out);
   register_task(dispatcher, task_2);
   dispatcher_run_loop(dispatcher);
   

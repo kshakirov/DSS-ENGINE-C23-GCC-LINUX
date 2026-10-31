@@ -15,10 +15,16 @@ static size_t get_block_count(size_t content_size){
   return block_count;
 }  
 
-Task* create_task(Coroutine* coroutine, CmdData* cmdData){
-  printf("Dispatcher: Creating the coroutine with id %d \n", coroutine->id);
+TaskContext* create_task_context(CmdData* cmdData){
+  TaskContext* context = malloc(sizeof(TaskContext));
+  context->id = cmdData->id;
+  return context;
+}
+
+Task* create_task(TaskContext* context, CmdData* cmdData){
+  printf("Dispatcher: Creating the task context with id %d \n", context->id);
   Task* task = malloc(sizeof(Task));
-  task->coroutine = coroutine;
+  task->context = context;
   task->cmdData = cmdData;
   task->id = 1;
   task->bytes_processed =0;

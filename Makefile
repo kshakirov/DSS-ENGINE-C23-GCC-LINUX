@@ -11,11 +11,11 @@ SANITIZE_FLAGS=-std=c23 -O1 -g3 -Wall -Wextra -Wpedantic -fno-omit-frame-pointer
 
 
 bits:
-	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c lib/file_table/file_table.c  -o bin/main $(GCCFLAGS)
+	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/coroutine/fiber_switch.S lib/dispatch/dispatcher.c lib/storage/storage.c lib/file_table/file_table.c  -o bin/main $(GCCFLAGS)
 #	$(GCC) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c  -o bin/main
 
 sanitize:
-	$(GCC) $(SANITIZE_FLAGS) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c lib/file_table/file_table.c -o $(SANITIZE_BIN) $(LDLIBS)
+	$(GCC) $(SANITIZE_FLAGS) bin/main.c lib/facade/facade.c lib/coroutine/coroutine.c lib/coroutine/fiber_switch.S lib/dispatch/dispatcher.c lib/storage/storage.c lib/file_table/file_table.c -o $(SANITIZE_BIN) $(LDLIBS)
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1 $(SANITIZE_BIN)
 
 toys:
@@ -28,7 +28,7 @@ test_storage:
 	$(GCC) test/storage/test_insert_find.c lib/storage/storage.c  -o test/storage/test_insert_find		$(GCCFLAGS) $(LDLIBS)
 
 test_filetable:
-	$(GCC) lib/facade/facade.c lib/coroutine/coroutine.c lib/dispatch/dispatcher.c lib/storage/storage.c test/file_table/test_put_get_file.c  lib/file_table/file_table.c  -o test/file_table/test_put_get_file		$(GCCFLAGS) $(LDLIBS)
+	$(GCC) lib/facade/facade.c lib/dispatch/dispatcher.c lib/storage/storage.c test/file_table/test_put_get_file.c  lib/file_table/file_table.c  -o test/file_table/test_put_get_file		$(GCCFLAGS) $(LDLIBS)
 	$(GCC) test/file_table/test_get_file.c  lib/file_table/file_table.c  -o test/file_table/test_get_file		$(GCCFLAGS) $(LDLIBS)
 test_coroutine:
 	$(GCC) -c lib/coroutine/fiber_switch.S -o test/coroutine/fiber_switch.o $(GCCFLAGS) $(LDLIBS)	

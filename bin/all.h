@@ -32,6 +32,10 @@ typedef struct  {
  
 }Coroutine;
 
+typedef struct {
+  int id;
+} TaskContext;
+
 typedef enum{
   TASK_CREATED,
   TASK_READY,
@@ -45,7 +49,7 @@ typedef enum{
 
 typedef struct {
   int id;
-  Coroutine* coroutine;
+  TaskContext* context;
   TASK_STATUS status;
   CmdData* cmdData;
   size_t bytes_processed;

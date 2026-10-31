@@ -1,2 +1,1 @@
-
-Coroutine* create_coroutine(CmdData* cmd);
+Coroutine* create_coroutine(void (*entry)(CmdData*), CmdData* cmd);

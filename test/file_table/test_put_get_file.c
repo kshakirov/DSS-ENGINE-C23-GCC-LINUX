@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../../bin/all.h"
-#include "../../lib/coroutine/coroutine.h"
 #include "../../lib/dispatch/dispatcher.h"
 #include "../../lib/facade/facade.h"
 
@@ -21,15 +20,15 @@ int main(void){
   Dispatcher* dispatcher = create_dispatcher();
 
   CmdData* put_data = put(filename, content, CONTENT_SIZE);
-  Coroutine* put_coroutine = create_coroutine(put_data);
-  Task* put_task = create_task(put_coroutine, put_data);
+  TaskContext* put_context = create_task_context(put_data);
+  Task* put_task = create_task(put_context, put_data);
   register_task(dispatcher, put_task);
   dispatcher_run_loop(dispatcher);
   assert(put_task->status == TASK_COMPLETED);
 
   CmdData* get_data = get(filename);
-  Coroutine* get_coroutine = create_coroutine(get_data);
-  Task* get_task = create_task(get_coroutine, get_data);
+  TaskContext* get_context = create_task_context(get_data);
+  Task* get_task = create_task(get_context, get_data);
   register_task(dispatcher, get_task);
   dispatcher_run_loop(dispatcher);
 
