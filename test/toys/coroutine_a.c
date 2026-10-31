@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <stdint.h>
-#include "fiber_switch.h"
+#include "../../lib/coroutine/fiber_switch.h"
 //#include "../../bin/all.h"
 // Размер стека для корутины (минимально 1 страница Linux — 4КБ)
 #define STACK_SIZE 4096

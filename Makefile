@@ -19,7 +19,7 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1 $(SANITIZE_BIN)
 
 toys:
-	$(GCC) -c test/toys/fiber_switch.S -o test/toys/fiber_switch.o $(GCCFLAGS) $(LDLIBS)
+	$(GCC) -c lib/coroutine/fiber_switch.S -o test/toys/fiber_switch.o $(GCCFLAGS) $(LDLIBS)
 	#$(GCC) test/toys/coroutine.c  -o test/toys/coroutine $(GCCFLAGS)
 	$(GCC) -c test/toys/coroutine_a.c  -o test/toys/coroutine_a. $(GCCFLAGS) $(LDLIBS)
 	$(GCC) test/toys/fiber_switch.o test/toys/coroutine_a.o  -o test/toys/coroutine_a	$(GCCFLAGS) $(LDLIBS)
