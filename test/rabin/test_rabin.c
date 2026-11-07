@@ -15,7 +15,7 @@ bool poly_divides(uint64_t a){
       printf("xor a = %lu\n", a);
       if(a == 0){
 	return true;
-      }else if(64 - __builtin_clzll(a) >  10){
+      }else if(64 - __builtin_clzll(a) <  54){
 	printf("the remainder %lu is less than our poly, quitting with false \n", a);
 	break;
       }else{
@@ -27,6 +27,36 @@ bool poly_divides(uint64_t a){
   }
   return false;
 }
+
+
+uint64_t poly_division_remainder(uint64_t a){
+  if(a == 0){
+    return  0;
+  }
+  uint64_t ours = RABIN_POLY;
+  for (int i = 0; i < 64;i ++){
+    int max_bits  = 64 -  __builtin_clzll(a);
+    printf("max bits = %d\n", max_bits);
+    if( max_bits >=  54){
+      a ^= ours << (max_bits - 54);
+      printf("xor a = %lu\n", a);
+      if(a == 0){
+	return 0;
+      }else if(64 - __builtin_clzll(a) <  54){
+	printf("the remainder %lu is less than our poly, quitting with false \n", a);
+	break;
+      }else{
+	printf("trying one more time\n");
+      }
+    }else {
+      break;;
+    }
+  }
+  return a;
+}
+
+
+
 
 int main(void){
   printf("Working with Rabin\n");
@@ -47,5 +77,19 @@ int main(void){
       
   assert(poly_divides(a));
   assert(!poly_divides(b));
+  uint64_t remainder = 0;
+  uint64_t temp = 0;
+  for (int y = 0;y <8; y++ ){
+    temp |= (uint64_t)test_window[y] << ((7 - y)*8);
+    }
+    remainder = poly_division_remainder(temp);
+
+  for (int i =8; i < RABIN_WINDOW_SIZE; i++ ){
+    uint64_t n_r  =  remainder << 8;
+    uint64_t c_b =   (uint64_t) test_window[i];
+    n_r |= c_b;
+    remainder = poly_division_remainder(n_r);
+    printf("new remainde  now is %lu\n", remainder);
+  }
     
 }
