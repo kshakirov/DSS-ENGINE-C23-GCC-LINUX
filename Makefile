@@ -33,3 +33,5 @@ test_filetable:
 test_coroutine:
 	$(GCC) -c lib/coroutine/fiber_switch.S -o test/coroutine/fiber_switch.o $(GCCFLAGS) $(LDLIBS)	
 	$(GCC) test/coroutine/fiber_switch.o test/coroutine/test_coroutine.c lib/coroutine/coroutine.c  -o test/coroutine/test_coroutine		$(GCCFLAGS) $(LDLIBS)
+test_rabin:
+	$(GCC) test/rabin/test_rabin.c   -o test/rabin/test_rabin		$(GCCFLAGS) $(LDLIBS)
