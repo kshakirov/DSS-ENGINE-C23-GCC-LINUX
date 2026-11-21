@@ -5,21 +5,22 @@
 #define RABIN_WINDOW_SIZE 48
 
 
+
 bool poly_divides(uint64_t a){
   uint64_t ours = RABIN_POLY;
   for (int i = 0; i < 64;i ++){
     int max_bits  = 64 -  __builtin_clzll(a);
-    printf("max bits = %d\n", max_bits);
+    //printf("max bits = %d\n", max_bits);
     if( max_bits >=  54){
       a ^= ours << (max_bits - 54);
-      printf("xor a = %lu\n", a);
+      //printf("xor a = %lu\n", a);
       if(a == 0){
 	return true;
       }else if(64 - __builtin_clzll(a) <  54){
-	printf("the remainder %lu is less than our poly, quitting with false \n", a);
+	//printf("the remainder %lu is less than our poly, quitting with false \n", a);
 	break;
       }else{
-	printf("trying one more time\n");
+	//printf("trying one more time\n");
       }
     }else {
       break;;
@@ -36,17 +37,17 @@ uint64_t poly_division_remainder(uint64_t a){
   uint64_t ours = RABIN_POLY;
   for (int i = 0; i < 64;i ++){
     int max_bits  = 64 -  __builtin_clzll(a);
-    printf("max bits = %d\n", max_bits);
+    //printf("max bits = %d\n", max_bits);
     if( max_bits >=  54){
       a ^= ours << (max_bits - 54);
-      printf("xor a = %lu\n", a);
+      //printf("xor a = %lu\n", a);
       if(a == 0){
 	return 0;
       }else if(64 - __builtin_clzll(a) <  54){
-	printf("the remainder %lu is less than our poly, quitting with false \n", a);
+	//printf("the remainder %lu is less than our poly, quitting with false \n", a);
 	break;
       }else{
-	printf("trying one more time\n");
+	//printf("trying one more time\n");
       }
     }else {
       break;;
@@ -55,7 +56,35 @@ uint64_t poly_division_remainder(uint64_t a){
   return a;
 }
 
+uint64_t  big_polinom_division(unsigned _BitInt(386) a){
 
+  if(a == 0){
+    return  0;
+  }
+  uint64_t ours = RABIN_POLY;
+  unsigned _BitInt(386) divisor = 0;
+  divisor = divisor | (unsigned _BitInt(386)) ours;
+  for (int i = 0; i < 386;i ++){
+    int max_bits  = 386 -  __builtin_clzg(a);
+    //printf("max bits = %d\n", max_bits);
+    if( max_bits >=  54){
+      a ^= divisor << (max_bits - 54);
+      //      printf("xor a = %lu\n", a);
+      if(a == 0){
+	return 0;
+      }else if(386 - __builtin_clzg(a) <  54){
+	//printf("the remainder %lu is less than our poly, quitting with false \n", a);
+	break;
+      }else{
+	//printf("trying one more time\n");
+      }
+    }else {
+      break;;
+    }
+  }
+  assert(a >> 64 == 0);
+  return a;
+  }
 
 
 int main(void){
@@ -71,6 +100,16 @@ int main(void){
   };
 
   assert(sizeof(test_window) == RABIN_WINDOW_SIZE);
+
+  unsigned _BitInt(386) test_window_polynomial = 0;
+  for(size_t i = 0; i < RABIN_WINDOW_SIZE; i++){
+    test_window_polynomial =
+      (test_window_polynomial << 8) | test_window[i];
+  }
+
+  assert((test_window_polynomial >> 384) == 0);
+  assert((uint8_t)(test_window_polynomial >> 368) == test_window[1]);
+  assert((uint8_t)test_window_polynomial == test_window[47]);
 
   uint64_t a = UINT64_C(0x7B466B169B82E6);
   uint64_t b = UINT64_C(0x7B466B169B82E7);
@@ -89,7 +128,11 @@ int main(void){
     uint64_t c_b =   (uint64_t) test_window[i];
     n_r |= c_b;
     remainder = poly_division_remainder(n_r);
-    printf("new remainde  now is %lu\n", remainder);
+    //printf("new remainde  now is %lu\n", remainder);
   }
+  uint64_t result = big_polinom_division(test_window_polynomial);
+  printf("result is %lu\n", (uint64_t) result);
+  assert(remainder == (uint64_t) result );
+
     
 }

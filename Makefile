@@ -1,4 +1,4 @@
-GCC=gcc
+GCC=gcc-16
 # GCC=/usr/local/gcc-15.1.0/bin/gcc-15.1.0
 GCCFLAGS= -std=c23 -Wall -Wextra -Wpedantic -Werror -O2 
 # on purpose duplicated to rewrite and not to forget about the first one
