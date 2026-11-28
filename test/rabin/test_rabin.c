@@ -112,6 +112,14 @@ uint64_t rabin_window_slide( const uint8_t* content, int content_length){
 }
 
 
+void create_remainders_table(uint64_t* remainders_array){
+
+    for (int i =0; i< 256;i++){
+      remainders_array[i] = big_polinom_division((unsigned _BitInt(386)) i << 376);
+    }
+}
+
+
 int main(void){
   printf("Working with Rabin\n");
 
@@ -176,5 +184,11 @@ int main(void){
   assert(remainder == (uint64_t) result );
   uint64_t window_result =  rabin_window_slide(test_data, RABIN_TEST_DATA_SIZE);
   printf("window result is %lu\n", (uint64_t) window_result);
-    
+  uint64_t remainders_array[256];
+  create_remainders_table(remainders_array);
+  for(int i =0; i< 256;i++){
+    printf("[%d]=%lu\n", i, remainders_array[i]);
+  }
+
+
 }
